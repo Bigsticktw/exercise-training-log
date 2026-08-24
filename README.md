@@ -1,5 +1,7 @@
 # 今日運動紀錄（Exercise Training Log）
 
+正式網站：https://bigsticktw.github.io/exercise-training-log/
+
 一個無框架、可離線開啟的靜態 PWA，用來記錄「今天」的運動狀態。三個選項互斥：
 
 1. `strength`：力量訓練，必填 1–1440 分鐘的整數。
@@ -7,6 +9,11 @@
 3. `rest`：今日無活動，時長固定為空值。
 
 日期一律以 `Asia/Taipei` 計算。前端不收集姓名、帳號、位置等個資，也不硬編碼 Sheet ID 或任何密鑰。
+
+## 手機安裝
+
+- Android Chrome：開啟正式網站，從瀏覽器選單選擇「加到主畫面」或「安裝應用程式」。
+- iPhone Safari：開啟正式網站，點分享按鈕，再選擇「加入主畫面」。
 
 ## 架構
 
