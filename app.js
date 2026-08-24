@@ -2,6 +2,8 @@ import { buildRecord, isValidEndpoint, taipeiDate } from './lib/record.js';
 
 const ENDPOINT_KEY = 'exerciseLog.endpoint.v1';
 const QUEUE_KEY = 'exerciseLog.pending.v1';
+const DEFAULT_ENDPOINT =
+  'https://script.google.com/macros/s/AKfycbzfvPKmGS7sx_HKuAafOhX-TDilY9q9gyDjjtPlq0EKWYj6QqYjUhDoXVwHb1NU5LL7/exec';
 
 const form = document.querySelector('#exercise-form');
 const durationField = document.querySelector('#duration-field');
@@ -14,7 +16,7 @@ const queueStatus = document.querySelector('#queue-status');
 const message = document.querySelector('#message');
 
 document.querySelector('#today-label').textContent = `${taipeiDate()}（台北時間）`;
-endpointInput.value = localStorage.getItem(ENDPOINT_KEY) ?? '';
+endpointInput.value = localStorage.getItem(ENDPOINT_KEY) ?? DEFAULT_ENDPOINT;
 
 function readQueue() {
   try {
@@ -54,7 +56,7 @@ function setBusy(busy) {
 }
 
 async function flushQueue() {
-  const endpoint = localStorage.getItem(ENDPOINT_KEY) ?? '';
+  const endpoint = localStorage.getItem(ENDPOINT_KEY) ?? DEFAULT_ENDPOINT;
   const queue = readQueue();
   if (!queue.length) return true;
   if (!isValidEndpoint(endpoint)) {
