@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#176b5b" />
+    <meta name="description" content="快速記錄今天的力量、有氧或無活動狀態。" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>今日運動紀錄</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow">DAILY MOVEMENT</p>
+        <h1>今天動了嗎？</h1>
+        <p id="today-label" class="today" aria-live="polite"></p>
+      </header>
+
+      <form id="exercise-form" novalidate>
+        <fieldset>
+          <legend>選擇一項</legend>
+          <div class="choices">
+            <label class="choice">
+              <input type="radio" name="activity" value="strength" required />
+              <span class="choice-icon" aria-hidden="true">力</span>
+              <span><strong>力量訓練</strong><small>重量、徒手或阻力訓練</small></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="activity" value="cardio" required />
+              <span class="choice-icon" aria-hidden="true">氧</span>
+              <span><strong>有氧訓練</strong><small>跑步、單車、游泳等</small></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="activity" value="rest" required />
+              <span class="choice-icon" aria-hidden="true">休</span>
+              <span><strong>今日無活動</strong><small>今天不記錄訓練時長</small></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="duration-field" class="duration" hidden>
+          <label for="duration">訓練時長</label>
+          <div class="input-with-unit">
+            <input id="duration" name="duration" type="number" inputmode="numeric" min="1" max="1440" step="1" />
+            <span>分鐘</span>
+          </div>
+          <small>請輸入 1–1440 的整數。</small>
+        </div>
+
+        <button id="submit-button" class="primary" type="submit">儲存今日紀錄</button>
+      </form>
+
+      <section class="sync-panel" aria-labelledby="sync-title">
+        <div>
+          <h2 id="sync-title">Google Sheets 同步</h2>
+          <p id="queue-status">沒有待同步資料</p>
+        </div>
+        <button id="retry-button" class="secondary" type="button" hidden>重新傳送</button>
+      </section>
+
+      <details class="settings">
+        <summary>同步設定</summary>
+        <label for="endpoint">Apps Script Web App URL</label>
+        <input id="endpoint" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" />
+        <button id="save-endpoint" class="secondary" type="button">儲存端點</button>
+        <p class="privacy">端點只保存在這台裝置的瀏覽器，不包含密鑰或個人資料。</p>
+      </details>
+
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
