@@ -64,8 +64,10 @@
         <summary>同步設定</summary>
         <label for="endpoint">Apps Script Web App URL</label>
         <input id="endpoint" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" />
-        <button id="save-endpoint" class="secondary" type="button">儲存端點</button>
-        <p class="privacy">端點只保存在這台裝置的瀏覽器，不包含密鑰或個人資料。</p>
+        <label for="api-token">私人 API Token</label>
+        <input id="api-token" type="password" autocomplete="off" placeholder="至少 24 個字元" />
+        <button id="save-endpoint" class="secondary" type="button">儲存私人連線</button>
+        <p class="privacy">公開網站只有輸入正確 Token 的裝置才能寫入你的 Sheet；端點與 Token 只保存在這台裝置。</p>
       </details>
 
       <p id="message" class="message" role="status" aria-live="polite"></p>

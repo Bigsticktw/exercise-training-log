@@ -1,22 +1,38 @@
 import { buildRecord, isValidEndpoint, taipeiDate } from './lib/record.js';
+import { isValidConfig, isValidToken } from './lib/config.js';
 
-const ENDPOINT_KEY = 'exerciseLog.endpoint.v1';
+const CONFIG_KEY = 'exerciseLog.config.v1';
 const QUEUE_KEY = 'exerciseLog.pending.v1';
-const DEFAULT_ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbzfvPKmGS7sx_HKuAafOhX-TDilY9q9gyDjjtPlq0EKWYj6QqYjUhDoXVwHb1NU5LL7/exec';
 
 const form = document.querySelector('#exercise-form');
 const durationField = document.querySelector('#duration-field');
 const durationInput = document.querySelector('#duration');
 const submitButton = document.querySelector('#submit-button');
 const endpointInput = document.querySelector('#endpoint');
+const tokenInput = document.querySelector('#api-token');
 const saveEndpointButton = document.querySelector('#save-endpoint');
 const retryButton = document.querySelector('#retry-button');
 const queueStatus = document.querySelector('#queue-status');
 const message = document.querySelector('#message');
 
 document.querySelector('#today-label').textContent = `${taipeiDate()}（台北時間）`;
-endpointInput.value = localStorage.getItem(ENDPOINT_KEY) ?? DEFAULT_ENDPOINT;
+
+function loadConfig() {
+  try {
+    const value = JSON.parse(localStorage.getItem(CONFIG_KEY) ?? '{}');
+    return isValidConfig(value) ? value : { endpoint: '', token: '' };
+  } catch {
+    return { endpoint: '', token: '' };
+  }
+}
+
+function saveConfig(config) {
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+}
+
+const initialConfig = loadConfig();
+endpointInput.value = initialConfig.endpoint;
+tokenInput.value = initialConfig.token;
 
 function readQueue() {
   try {
@@ -56,21 +72,21 @@ function setBusy(busy) {
 }
 
 async function flushQueue() {
-  const endpoint = localStorage.getItem(ENDPOINT_KEY) ?? DEFAULT_ENDPOINT;
+  const config = loadConfig();
   const queue = readQueue();
   if (!queue.length) return true;
-  if (!isValidEndpoint(endpoint)) {
-    setMessage('紀錄已保存在本機。請先設定有效的 Apps Script /exec 端點。', 'error');
+  if (!isValidConfig(config)) {
+    setMessage('紀錄已保存在本機。請先完成私人 Google Sheets 連線設定。', 'error');
     return false;
   }
 
   setBusy(true);
   try {
     for (const record of [...queue]) {
-      const response = await fetch(endpoint, {
+      const response = await fetch(config.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(record),
+        body: JSON.stringify({ token: config.token, payload: record }),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json();
@@ -110,12 +126,17 @@ form.addEventListener('submit', async (event) => {
 
 saveEndpointButton.addEventListener('click', async () => {
   const endpoint = endpointInput.value.trim();
+  const token = tokenInput.value.trim();
   if (!isValidEndpoint(endpoint)) {
     setMessage('請輸入以 https://script.google.com 開頭、/exec 結尾的 Web App URL。', 'error');
     return;
   }
-  localStorage.setItem(ENDPOINT_KEY, endpoint);
-  setMessage('同步端點已保存在這台裝置。', 'success');
+  if (!isValidToken(token)) {
+    setMessage('私人 Token 至少需要 24 個字元。', 'error');
+    return;
+  }
+  saveConfig({ endpoint, token });
+  setMessage('私人連線設定已保存在這台裝置。', 'success');
   await flushQueue();
 });
 

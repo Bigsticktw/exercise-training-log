@@ -1,10 +1,11 @@
-const CACHE_NAME = 'exercise-training-log-v2';
+const CACHE_NAME = 'exercise-training-log-v3';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './lib/record.js',
+  './lib/config.js',
   './manifest.webmanifest',
   './icon.svg',
 ];

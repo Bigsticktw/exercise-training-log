@@ -16,11 +16,13 @@ function doGet() {
 }
 
 function doPost(e) {
-  const lock = LockService.getScriptLock();
+  let lock;
   try {
+    const request = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    validateToken_(request.token);
+    const record = validateRecord_(request.payload || {});
+    lock = LockService.getScriptLock();
     lock.waitLock(10000);
-    const payload = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    const record = validateRecord_(payload);
     const sheet = getSheet_();
     ensureHeader_(sheet);
     const row = [
@@ -44,8 +46,13 @@ function doPost(e) {
   } catch (error) {
     return jsonOutput_({ ok: false, error: String(error.message || error) });
   } finally {
-    if (lock.hasLock()) lock.releaseLock();
+    if (lock && lock.hasLock()) lock.releaseLock();
   }
+}
+
+function validateToken_(token) {
+  const expected = PropertiesService.getScriptProperties().getProperty('API_TOKEN');
+  if (!expected || !token || token !== expected) throw new Error('Unauthorized');
 }
 
 function getSheet_() {
